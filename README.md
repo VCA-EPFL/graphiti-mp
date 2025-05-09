@@ -1,5 +1,18 @@
 # Installation
 
+## System installation
+
+You can install `graphiti` globally using the following:
+
+```
+mkdir -p ~/texmf/tex/metapost
+git clone https://github.com/VCA-EPFL/graphiti-mp ~/texmf/tex/metapost/graphiti-mp
+```
+
+## Local installation
+
+Otherwise, the following files can just be copied alongside the main `tex` file:
+
 Copy:
     - t-fonts.tex
     - t-graphiti.tex
