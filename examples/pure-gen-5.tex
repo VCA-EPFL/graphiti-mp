@@ -1,0 +1,122 @@
+% -*- mode: metapost -*-
+
+\usemodule[graphiti]
+\usemodule[fonts]
+
+\starttext
+\startMPpage
+u := 1cm;
+dist := .5u;
+pickup pencircle scaled sz;
+
+createFlexMerge(merge, textext("Merge"), col.merge); merge.dy = merge.dx = defaultdx;
+createFlexOp(modn, textext("Pure $\cdot \% \cdot$"), 1, 1, 0, col.pure); modn.dy = defaultdx; modn.dx = defaultdx;
+createFlexOp(modnb, textext("Pure $\cdot \% \cdot$"), 1, 1, 0, col.pure); modnb.dy = defaultdx; modnb.dx = defaultdx;
+createFlexBox(forka, textext("Split"), 1, 3, col.split); forka.dy = forka.dx = defaultdx;
+createFlexBox(forkb, textext("Split"), 1, 2, col.split); forkb.dy = forkb.dx = defaultdx;
+createFlexBranch(branch, textext("Branch"), col.branch); branch.dy = branch.dx = defaultdx;
+createFlexBox(joina, textext("Join"), 3, 1, col.join); joina.dy = joina.dx = defaultdx;
+createFlexBox(splita, textext("Split"), 1, 2, col.split); splita.dy = splita.dx = defaultdx;
+createFlexBox(comp, textext("Pure $\cdot \ne 0$"), 1, 1, col.pure); comp.dy = comp.dx = defaultdx;
+createFlexBox(joinb, textext("Join"), 2, 1, col.join); joinb.dy = joinb.dx = defaultdx;
+createFlexBox(splitb, textext("Split"), 1, 2, col.split); splitb.dy = splitb.dx = defaultdx;
+createFlexBox(splitc, textext("Split"), 1, 2, col.split); splitc.dy = splitc.dx = defaultdx;
+createFlexBox(sink, textext("Sink"), 1, 1, col.hidden); sink.dy = sink.dx = defaultdx;
+createFlexBox(forkc, textext("Fork"), 1, 2, col.fork); forkc.dy = forkc.dx = defaultdx;
+createFlexBox(init, textext("Init"), 1, 1, col.hidden); init.dy = init.dx = defaultdx;
+createFlexBox(joind, textext("Join"), 2, 1, col.join); joind.dy = joind.dx = defaultdx;
+createFlexBox(splitd, textext("Split"), 1, 2, col.split); splitd.dy = splitd.dx = defaultdx;
+createFlexBox(joine, textext("Join"), 2, 1, col.join); joine.dy = joine.dx = defaultdx;
+createFlexBox(joinf, textext("Join"), 2, 1, col.join); joinf.dy = joinf.dx = defaultdx;
+createFlexBox(purefork, textext("Pure $(\cdot, \cdot)$"), 1, 1, col.pure); purefork.dy = defaultdx; purefork.dx = defaultdx;
+createFlexBox(pureforkb, textext("Pure $(\cdot, \cdot)$"), 1, 1, col.pure); pureforkb.dy = defaultdx; pureforkb.dx = defaultdx;
+createFlexBox(puref, textext("Pure $f\ $"), 1, 1, col.pure); puref.dy = defaultdx; puref.dx = defaultdx;
+createFlexBox(pureg, textext("Pure $g$"), 1, 1, col.pure); pureg.dy = defaultdx; pureg.dx = defaultdx;
+
+% datapath
+joine.out0 = modn.n + (0, dist);
+
+modn.n = + (0, dist);
+% forkb.in0 = modn.out0 - (0, dist);
+% comp.in0 = forkb.out1 - (0, dist);
+forkb.in0 = splita.out0 + (0,-dist);
+comp.in0 = modnb.out0 - (0, dist);
+modnb.w = modn.e + (-dist, 0);
+joinf.out0 = modnb.in0 + (0, dist);
+xpart joina.e = xpart modn.w;
+ypart joina.n = ypart joine.s - dist;
+branch.in = splitc.out0 - (0, dist);
+forka.out1 = joine.in1 + (0, 2dist);
+ypart splita.out1 = ypart forka.in0 + dist;
+xpart splita.out1 = xpart forka.in0 - 2.5dist;
+% purefork.out0 = forka.in0 + (0, dist);
+merge.s = splitd.n + (0, dist);
+splita.in0 = splitd.out1 - (0, 1.5dist);
+
+puref.out0 = splita.in0 + (0, dist);
+pureg.in0 = joina.out0 - (0, dist);
+
+sink.nw = splitb.se + (.5dist,-dist);
+
+joind.in1 = joina.out0 - (0, 1.5dist);
+splitc.in0 = joind.out0 - (0, dist);
+
+path combined;
+combined := bbox (bpath.modn -- bpath.merge -- bpath.forka -- bpath.forkb -- bpath.branch -- bpath.joina -- bpath.comp -- bpath.splita -- (branch.w - (dist, 0)));
+createFlexTagger(tagger, nullpicture, (.5u, .7u), col.tagger);
+tagger.nw = ulcorner combined + (-.5u,.5u);
+tagger.se = lrcorner combined + (.5u,-.5u);
+
+joinb.out0 = (xpart merge.in1, ypart topn tagger.intop) + (0, dist);
+splitb.in0 = (xpart branch.out1, ypart botn tagger.outbot) - (0, dist);
+
+drawFlexObj(forka, forkb, joina, splita, joine, joinf, puref, pureg);
+
+path box; box := bbox (bpath.forka -- bpath.splita -- bpath.joina -- bpath.comp) enlarged (.5dist, .2dist);
+
+pickup pencircle scaled 0.03u;
+interim ahlength := 2pt;
+interim crossingscale := 5pt;
+
+path forkjoin; forkjoin := connect((botn forka.out0), topn joina.in0, .8dist);
+drawarrow forkjoin;
+
+drawarrow (botn forka.out1) -- (topn joine.in1);
+drawarrow connect((botn forka.out2), (topn joinf.in1), .5dist-sz-1pt);
+
+drawarrow (connect(botn forkb.out0, topn joine.in0, 1.2dist)) crossingunder forkjoin;
+drawarrow (connect(botn forkb.out1, topn joinf.in0, .5dist)) crossingunder forkjoin crossingunder ((botn forka.out1) -- (topn joine.in1));
+
+drawarrow connect((botn joinf.out0), topn joina.in2, .5dist-sz);
+
+drawarrow connect((botn joine.out0), topn joina.in1, .15dist);
+
+drawarrow connect(botn splita.out0, topn forkb.in0, 0);
+drawarrow connect(botn splita.out1, topn forka.in0, .5dist-sz-1pt);
+
+drawarrow (botn puref.out0) -- topn splita.in0;
+drawarrow (botn joina.out0) -- topn pureg.in0;
+
+pair inp; pair outp;
+
+inp := puref.in0 + (0, dist);
+outp := pureg.out0 - (0, dist);
+
+drawarrow inp -- topn puref.in0;
+drawarrow (botn pureg.out0) -- outp;
+
+% picture graph; graph := currentpicture;
+% currentpicture := nullpicture;
+
+% pickup pencircle scaled sz;
+% fill box withcolor lght(col.pure);
+% draw box withcolor drk(col.pure);
+% draw graph;
+% label.llft(textext("Pure $f$"), (urcorner box) shifted (-.2dist, -.1dist));
+\stopMPpage
+\stoptext
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: t
+%%% End:

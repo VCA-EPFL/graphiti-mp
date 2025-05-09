@@ -1,0 +1,21 @@
+\startmodule[fonts]
+
+\definefontfamily [acmfonts] [rm] [Libertinus Serif]
+\definefontfamily [acmfonts] [ss] [Libertinus Sans]
+\definefontfamily [acmfonts] [tt] [Inconsolata] [rscale=0.9]
+\definefontfamily [acmfonts] [mm] [Libertinus Math] [features={math\mathsizesuffix,libertinus:mathextra,mathextra},goodies=libertinus-math.lfg]
+
+\usetypescriptfile[libertinus]
+
+\setupbodyfont[acmfonts, 14pt, sans]
+
+\define\qute{\quotedbl}
+\define[1]\qutation{\qute{}#1\qute{}}
+\define[2]\drport{\mathematics{(\mono{"#1"},\mono{"#2"})}}
+
+\stopmodule
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: t
+%%% End:
