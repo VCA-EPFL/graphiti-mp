@@ -1,3 +1,10 @@
+if known graphiti_mp_header:
+  message "graphiti was loaded twice";
+  expandafter endinput
+fi
+string graphiti_mp_header;
+graphiti_mp_header := "";
+
 input boxes;
 
 newinternal graphdefaultdx, graphdefaultdy;
@@ -435,3 +442,5 @@ color col.generic; col.generic := acol5;
 
 % drawarrow connect(mux.out, othermux.in1, 0.5u);
 % drawarrow connect(othermux.out, box.in0, 0.5u);
+
+endinput
