@@ -9,6 +9,10 @@ input boxes;
 
 newinternal graphdefaultdx, graphdefaultdy;
 graphdefaultdx := graphdefaultdy := 3bp;
+newinternal sz; sz := .1cm;
+newinternal dist; dist := .5cm;
+newinternal u; u := 1cm;
+newinternal connectdist; connectdist := .5dist - sz - 1pt;
 
 vardef lght(expr c) =
   .25[c, white]
@@ -17,7 +21,6 @@ enddef;
 vardef drk(expr c) =
   .25[c, black]
 enddef;
-
 
 def forkpath_(suffix $) =
   $.nw -- $.ne -- ($.se + ($.dist, 0)) -- ($.sw - ($.dist, 0)) -- cycle
@@ -352,9 +355,6 @@ vardef drawp_(suffix s) =
   scantokens s.drawp_(s)
 enddef;
 
-newinternal sz; sz := .1cm;
-newinternal dist; dist := .5cm;
-
 vardef botn expr e = e - (0,sz) enddef;
 vardef topn expr e = e + (0,sz) enddef;
 vardef rtn expr e = e + (sz,0) enddef;
@@ -364,6 +364,16 @@ vardef botnL expr e = e - (0,sz/2.) enddef;
 vardef topnL expr e = e + (0,sz/2.) enddef;
 vardef rtnL expr e = e + (sz/2.,0) enddef;
 vardef lftnL expr e = e - (sz/2.,0) enddef;
+
+vardef nconnect(expr l_, r_) =
+  save ll, rr, l, r;
+  pair ll, rr, l, r;
+  l := botn l_;
+  r := topn r_;
+  ll := (xpart l, ypart l - connectdist);
+  rr := (xpart r, ypart l - connectdist);
+  l -- ll -- rr -- r
+enddef;
 
 newinternal numeric cornersize; cornersize := 3pt;
 newinternal numeric textscaledsize; textscaledsize := .5;
@@ -439,6 +449,12 @@ color col.hidden; col.hidden := col8;
 color col.pure; col.pure := col7;
 color col.gcd; col.gcd := acol1;
 color col.generic; col.generic := acol5;
+
+vardef samewidth (suffix a) (text b_) =
+  forsuffixes b=b_:
+    a.w - a.e = b.w - b.e;
+  endfor
+enddef;
 
 % drawarrow connect(mux.out, othermux.in1, 0.5u);
 % drawarrow connect(othermux.out, box.in0, 0.5u);
