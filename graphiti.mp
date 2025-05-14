@@ -14,6 +14,11 @@ newinternal dist; dist := .5cm;
 newinternal u; u := 1cm;
 newinternal connectdist; connectdist := .5dist - sz - 1pt;
 
+newinternal numeric cornersize; cornersize := 3pt;
+newinternal numeric textscaledsize; textscaledsize := .5;
+newinternal numeric boxyscaledsize; boxyscaledsize := .9;
+newinternal string labelAtcolor; labelAtcolor := "col.hidden";
+
 vardef lght(expr c) =
   .25[c, white]
 enddef;
@@ -62,24 +67,6 @@ vardef createFlexMerge(suffix s) (expr pic, coll) =
 
   color s.drawcol; s.drawcol := drk(coll);
   color s.fillcol; s.fillcol := lght(coll);
-enddef;
-
-vardef createFork(suffix s) (expr shft, loc, coll) =
-  path s; save locals; path locals;
-  locals := (0,0) -- (1,0) -- (0.85,0.3) -- (0.15,0.3) -- cycle;
-  locals := locals shifted -center locals scaled shft shifted loc;
-  s := locals;
-
-  pair s.in; s.in := top top .5[ulcorner s, urcorner s];
-  pair s.out[];
-  s.out0 := bot bot .27[llcorner s, lrcorner s];
-  s.out1 := bot bot .73[llcorner s, lrcorner s];
-  pair s.cond; s.cond := rt rt point .5 of subpath(1, 2) of s;
-
-  color s.drawcol; s.drawcol := drk(coll);
-  color s.fillcol; s.fillcol := lght(coll);
-
-  path s.drawpath_; s.drawpath_ := locals;
 enddef;
 
 vardef boxpath_(suffix $) =
@@ -141,46 +128,6 @@ vardef createFlexOp(suffix s) (expr pic, dimtop, dimbot, pipelined, coll) =
   color s.fillcol; s.fillcol := lght(coll);
 enddef;
 
-def createBox(suffix s) (expr dimtop, dimbot, shft, loc, coll) =
-  path s;
-  s := unitsquare shifted - (center unitsquare);
-  s := s xyscaled shft shifted loc;
-
-  pair s.out[];
-  pair s.in[];
-
-  for i=0 upto dimbot:
-    s.out[i] := bot bot (point ((i + 1)/(dimbot + 1)) of (llcorner s -- lrcorner s));
-  endfor;
-
-  for i=0 upto dimtop:
-    s.in[i] := top top (point ((i + 1)/(dimtop + 1)) of (ulcorner s -- urcorner s));
-  endfor;
-
-  color s.drawcol; s.drawcol := drk(coll);
-  color s.fillcol; s.fillcol := lght(coll);
-
-  path s.drawpath_; s.drawpath_ := s;
-enddef;
-
-def circlepath_(suffix $) = bpath.$ enddef;
-
-vardef createFlexCircle(suffix s) (expr pic, coll) =
-  circleit.s(pic);
-
-  pair s.in; s.in = .5[s.nw, s.ne];
-  pair s.out[];
-  s.out0 = .27[s.sw, s.se];
-  s.out1 = .73[s.sw, s.se];
-  pair s.cond; s.cond = .5[s.se, s.ne];
-  s.dist = 5;
-
-  string s.drawp_; string s.fillp_; s.drawp_ := s.fillp_ := "circlepath_";
-
-  color s.drawcol; s.drawcol := drk(coll);
-  color s.fillcol; s.fillcol := lght(coll);
-enddef;
-
 vardef taggerpath_(suffix $) =
   $.ne -- $.nw -- $.sw -- $.se -- ($.se - (0, ypart $.size_)) -- ($.sw - $.size_) -- ($.nw + (-xpart $.size_, ypart $.size_)) -- ($.ne + (0, ypart $.size_)) -- cycle
 enddef;
@@ -201,25 +148,6 @@ vardef createFlexTagger(suffix s) (expr pic, size, coll) =
 
   color s.drawcol; s.drawcol := drk(coll);
   color s.fillcol; s.fillcol := lght(coll);
-enddef;
-
-def createTagger(suffix s) (expr innerbox, size, coll) =
-  path s;
-  s := ;
-
-  pair s.toplabel; s.toplabel := .5[((urcorner innerbox) + (0, ypart size)), ulcorner innerbox];
-  pair s.botlabel; s.botlabel := .5[((lrcorner innerbox) - (0, ypart size)), llcorner innerbox];
-
-  pair s.intop; pair s.inbot; pair s.outtop; pair s.outbot;
-  s.intop := top top .5[ulcorner innerbox + (0, ypart size), urcorner innerbox + (0, ypart size)];
-  s.outtop := bot bot .5[ulcorner innerbox, urcorner innerbox];
-  s.inbot := top top .5[llcorner innerbox, lrcorner innerbox];
-  s.outbot := bot bot .5[llcorner innerbox - (0, ypart size), lrcorner innerbox - (0, ypart size)];
-
-  color s.drawcol; s.drawcol := drk(coll);
-  color s.fillcol; s.fillcol := lght(coll);
-
-  path s.drawpath_; s.drawpath_ := s;
 enddef;
 
 def qdrawpath_(suffix $) =
@@ -389,12 +317,6 @@ vardef drawFlexObj(text s_) =
   endfor
 enddef;
 
-vardef drawObj(suffix s) =
-  save slocal; path slocal; slocal := s ;
-  fill slocal withcolor s.fillcol;
-  draw s.drawpath_ withcolor s.drawcol;
-enddef;
-
 vardef drawp_(suffix s) =
   scantokens s.drawp_(s)
 enddef;
@@ -434,11 +356,6 @@ vardef connectLoopHorizontal (expr l, r, da, db) =
   p3 := (xpart p4, ypart p2);
   l -- p1 -- p2 -- p3 -- p4 -- r
 enddef;
-
-newinternal numeric cornersize; cornersize := 3pt;
-newinternal numeric textscaledsize; textscaledsize := .5;
-newinternal numeric boxyscaledsize; boxyscaledsize := .9;
-newinternal string labelAtcolor; labelAtcolor := "col.hidden";
 
 vardef labelAtUF.@#(expr lText) =
   save labelText, scale, intColor;
