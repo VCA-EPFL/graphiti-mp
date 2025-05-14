@@ -29,12 +29,12 @@ enddef;
 vardef createFlexBranch(suffix s) (expr pic, coll) =
   boxit.s(pic);
 
-  pair s.in; s.in = .5[s.nw, s.ne];
+  pair s.in; s.in = .5[s.nw, s.ne] + (0, sz);
   pair s.out[];
-  s.out0 = .27[(s.sw - (s.dist, 0)), (s.se + (s.dist, 0))];
-  s.out1 = .73[(s.sw - (s.dist, 0)), (s.se + (s.dist, 0))];
-  pair s.cond; s.cond = .5[(s.se + (s.dist, 0)), s.ne];
-  pair s.icond; s.icond = .5[(s.sw - (s.dist, 0)), s.nw];
+  s.out0 = .27[(s.sw - (s.dist, 0)), (s.se + (s.dist, 0))] - (0, sz);
+  s.out1 = .73[(s.sw - (s.dist, 0)), (s.se + (s.dist, 0))] - (0, sz);
+  pair s.cond; s.cond = .5[(s.se + (s.dist, 0)), s.ne] + (sz, 0);
+  pair s.icond; s.icond = .5[(s.sw - (s.dist, 0)), s.nw] - (sz, 0);
   s.dist = 5;
 
   string s.drawp_; string s.fillp_; s.drawp_ := s.fillp_ := "forkpath_";
@@ -50,12 +50,12 @@ enddef;
 vardef createFlexMerge(suffix s) (expr pic, coll) =
   boxit.s(pic);
 
-  pair s.out; s.out = .5[s.sw, s.se];
+  pair s.out; s.out = .5[s.sw, s.se] - (0, sz);
   pair s.in[];
-  s.in0 = .27[(s.nw - (s.dist, 0)), (s.ne + (s.dist, 0))];
-  s.in1 = .73[(s.nw - (s.dist, 0)), (s.ne + (s.dist, 0))];
-  pair s.cond; s.cond = .5[s.se, (s.ne + (s.dist, 0))];
-  pair s.icond; s.icond = .5[s.sw, (s.nw - (s.dist, 0))];
+  s.in0 = .27[(s.nw - (s.dist, 0)), (s.ne + (s.dist, 0))] + (0, sz);
+  s.in1 = .73[(s.nw - (s.dist, 0)), (s.ne + (s.dist, 0))] + (0, sz);
+  pair s.cond; s.cond = .5[s.se, (s.ne + (s.dist, 0))] + (sz, 0);
+  pair s.icond; s.icond = .5[s.sw, (s.nw - (s.dist, 0))] - (sz, 0);
   s.dist = 5;
 
   string s.drawp_; string s.fillp_; s.drawp_ := "mergepath_"; s.fillp_ := "mergepath_";
@@ -93,11 +93,11 @@ vardef createFlexBox(suffix s) (expr pic, dimtop, dimbot, coll) =
   pair s.in[];
 
   for i=0 upto dimbot:
-    s.out[i] := ((i + 1)/(dimbot + 1))[s.sw, s.se];
+    s.out[i] := ((i + 1)/(dimbot + 1))[s.sw, s.se] - (0, sz);
   endfor;
 
   for i=0 upto dimtop:
-    s.in[i] := ((i + 1)/(dimtop + 1))[s.nw, s.ne];
+    s.in[i] := ((i + 1)/(dimtop + 1))[s.nw, s.ne] + (0, sz);
   endfor;
 
   string s.drawp_; string s.fillp_; s.drawp_ := "boxpath_"; s.fillp_ := "boxpath_";
@@ -123,11 +123,11 @@ vardef createFlexOp(suffix s) (expr pic, dimtop, dimbot, pipelined, coll) =
   pair s.in[];
 
   for i=0 upto dimbot:
-    s.out[i] := ((i + 1)/(dimbot + 1))[s.sw, s.se];
+    s.out[i] := ((i + 1)/(dimbot + 1))[s.sw, s.se] - (0, sz);
   endfor;
 
   for i=0 upto dimtop:
-    s.in[i] := ((i + 1)/(dimtop + 1))[s.nw, s.ne];
+    s.in[i] := ((i + 1)/(dimtop + 1))[s.nw, s.ne] + (0, sz);
   endfor;
 
   if pipelined > 1:
@@ -192,10 +192,10 @@ vardef createFlexTagger(suffix s) (expr pic, size, coll) =
   pair s.botlabel; s.botlabel = .5[(s.se - (0, ypart size)), s.sw];
 
   pair s.size_; s.size_ = size;
-  pair s.intop; s.intop = .5[s.nw + (0, ypart s.size_), s.ne + (0, ypart s.size_)];
-  pair s.outtop; s.outtop = .5[s.nw, s.ne];
-  pair s.inbot; s.inbot = .5[s.sw, s.se];
-  pair s.outbot; s.outbot = .5[s.sw - (0, ypart s.size_), s.se - (0, ypart s.size_)];
+  pair s.intop; s.intop = .5[s.nw + (0, ypart s.size_), s.ne + (0, ypart s.size_)] + (0, sz);
+  pair s.outtop; s.outtop = .5[s.nw, s.ne] - (0, sz);
+  pair s.inbot; s.inbot = .5[s.sw, s.se] + (0, sz);
+  pair s.outbot; s.outbot = .5[s.sw - (0, ypart s.size_), s.se - (0, ypart s.size_)] - (0, sz);
 
   string s.drawp_; string s.fillp_; s.drawp_ := "taggerpath_"; s.fillp_ := "taggerpath_";
 
@@ -270,6 +270,36 @@ vardef createFlexQ(suffix s) (expr pic, coll) =
   color s.fillcol; s.fillcol := lght(coll);
 enddef;
 
+vardef notdrawpath_(suffix $) =
+  $.sw -- (.5[$.ne, $.se] + ($.dist, 0)) -- $.nw -- cycle
+enddef;
+
+vardef notoverlay_(suffix $) =
+  image(draw fullcircle scaled 5 shifted (.5[$.ne, $.se] + ($.dist, 0));)
+enddef;
+
+vardef createFlexNot(suffix s) (expr pic) (suffix orientation) (expr coll) =
+  boxit.s(pic);
+
+  string s.orient; s.orient := str orientation;
+  pair s.in[];
+  s.in0 = .27[s.nw, s.sw] - (sz, 0);
+  s.in1 = .73[s.nw, s.sw] - (sz, 0);
+  pair s.cond; s.cond = .5[s.se, s.ne];
+  s.dist = .5cm;
+  pair s.out; s.out = .5[s.ne, s.se] + (s.dist, 0) + (2sz, 0);
+  s.nw = ((ulcorner pic -- (ulcorner pic + (0,10cm))) intersectionpoint (((.5[urcorner pic, lrcorner pic] + (.5cm, 0)) -- urcorner pic) stretched 20)) + (-defaultdx, defaultdy);
+  s.sw = ((llcorner pic -- (llcorner pic + (0,-10cm))) intersectionpoint (((.5[urcorner pic, lrcorner pic] + (.5cm, 0)) -- lrcorner pic) stretched 20)) + (-defaultdx, -defaultdy);
+
+  string s.drawp_; s.drawp_ := "notdrawpath_";
+  string s.fillp_; s.fillp_ := "notdrawpath_";
+
+  color s.drawcol; s.drawcol := drk(coll);
+  color s.fillcol; s.fillcol := lght(coll);
+
+  string s.overlayp_; s.overlayp_ := "notoverlay_";
+enddef;
+
 vardef connect(expr l, r, shft) =
   save ll, rr;
   pair ll, rr;
@@ -330,6 +360,20 @@ vardef connectAroundLeft (expr l, r, box, buffer) =
   l -- (xpart l, ypart p1) -- p1 -- p2 -- (xpart r, ypart p2) -- r
 enddef;
 
+vardef connectAroundBottom (expr l, r, box, buffer) =
+  save p; pair p[];
+  p1 := urcorner box + (buffer, -buffer);
+  p2 := lrcorner box + (-buffer, -buffer);
+  l -- (xpart p1, ypart l) -- p1 -- p2 -- (xpart p2, ypart r) -- r
+enddef;
+
+vardef connectAroundTop (expr l, r, box, buffer) =
+  save p; pair p[];
+  p1 := urcorner box + (buffer, buffer);
+  p2 := lrcorner box + (buffer, -buffer);
+  l -- (xpart l, ypart p1) -- p1 -- p2 -- (xpart r, ypart p2) -- r
+enddef;
+
 vardef drawFlexObj(text s_) =
   forsuffixes s=s_:
     save slocal; path slocal;
@@ -355,24 +399,40 @@ vardef drawp_(suffix s) =
   scantokens s.drawp_(s)
 enddef;
 
-vardef botn expr e = e - (0,sz) enddef;
-vardef topn expr e = e + (0,sz) enddef;
-vardef rtn expr e = e + (sz,0) enddef;
-vardef lftn expr e = e - (sz,0) enddef;
+vardef botn expr e = e enddef;
+vardef topn expr e = e enddef;
+vardef rtn expr e = e  enddef;
+vardef lftn expr e = e enddef;
 
 vardef botnL expr e = e - (0,sz/2.) enddef;
 vardef topnL expr e = e + (0,sz/2.) enddef;
 vardef rtnL expr e = e + (sz/2.,0) enddef;
 vardef lftnL expr e = e - (sz/2.,0) enddef;
 
-vardef nconnect(expr l_, r_) =
-  save ll, rr, l, r;
-  pair ll, rr, l, r;
-  l := botn l_;
-  r := topn r_;
+vardef nconnect(expr l, r) =
+  save ll, rr;
+  pair ll, rr;
   ll := (xpart l, ypart l - connectdist);
   rr := (xpart r, ypart l - connectdist);
   l -- ll -- rr -- r
+enddef;
+
+vardef connectLoopVertical (expr l, r, da, db) =
+  pair p[];
+  p1 := l - (0, da);
+  p2 := l + (db, -da);
+  p4 := r + (0, da);
+  p3 := (xpart p2, ypart p4);
+  l -- p1 -- p2 -- p3 -- p4 -- r
+enddef;
+
+vardef connectLoopHorizontal (expr l, r, da, db) =
+  pair p[];
+  p1 := l + (da, 0);
+  p2 := l + (da, db);
+  p4 := r + (-da, 0);
+  p3 := (xpart p4, ypart p2);
+  l -- p1 -- p2 -- p3 -- p4 -- r
 enddef;
 
 newinternal numeric cornersize; cornersize := 3pt;
