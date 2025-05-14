@@ -282,9 +282,9 @@ vardef createFlexNot(suffix s) (expr pic) (suffix orientation) (expr coll) =
   boxit.s(pic);
 
   string s.orient; s.orient := str orientation;
-  pair s.in[];
-  s.in0 = .27[s.nw, s.sw] - (sz, 0);
-  s.in1 = .73[s.nw, s.sw] - (sz, 0);
+  pair s.in;
+  s.in = .5[s.nw, s.sw] - (sz, 0);
+  % s.in1 = .73[s.nw, s.sw] - (sz, 0);
   pair s.cond; s.cond = .5[s.se, s.ne];
   s.dist = .5cm;
   pair s.out; s.out = .5[s.ne, s.se] + (s.dist, 0) + (2sz, 0);
